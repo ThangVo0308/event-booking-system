@@ -22,8 +22,8 @@ import event_booking_system.demo.repositories.VerificationRepository;
 import event_booking_system.demo.services.AuthenticationService;
 import event_booking_system.demo.services.RoleService;
 import event_booking_system.demo.services.UserService;
-import event_booking_system.demo.validates.EmailValidate;
-import event_booking_system.demo.validates.PasswordValidate;
+import event_booking_system.demo.validates.EmailValidator;
+import event_booking_system.demo.validates.PasswordValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -42,7 +42,6 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -56,7 +55,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.CHARACTERS;
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.REDIRECT_URI;
 import static event_booking_system.demo.exceptions.authenication.AuthenticationErrorCode.PROVIDER_NOT_SUPPORTED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -73,8 +71,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     KafkaTemplate<String, String> kafkaTemplate;
     BaseRedisServiceImpl<String, String, Object> baseRedisService;
 
-    EmailValidate emailValidator;
-    PasswordValidate passwordValidator;
+    EmailValidator emailValidator;
+    PasswordValidator passwordValidator;
 
     @NonFinal
     @Value("${security.oauth2.client.registration.google.client-id}")
