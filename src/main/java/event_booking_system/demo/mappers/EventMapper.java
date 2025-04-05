@@ -1,10 +1,7 @@
 package event_booking_system.demo.mappers;
 
-import com.sun.jdi.request.EventRequest;
-import event_booking_system.demo.dtos.requests.authenications.SignUpRequest;
-import event_booking_system.demo.dtos.responses.checkin.CheckinResponse;
+import event_booking_system.demo.dtos.requests.events.EventRequest;
 import event_booking_system.demo.dtos.responses.event.EventResponse;
-import event_booking_system.demo.entities.Checkin;
 import event_booking_system.demo.entities.Event;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

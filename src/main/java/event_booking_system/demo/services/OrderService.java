@@ -1,4 +1,4 @@
-package event_booking_system.demo.service;
+package event_booking_system.demo.services;
 
 import event_booking_system.demo.entities.Order;
 import event_booking_system.demo.entities.Ticket;
@@ -16,7 +16,7 @@ public interface OrderService {
 
     void deleteOrder(String id);
 
-    Optional<Order> findOrderById(String id);
+    Order findOrderById(String id);
 
     List<Order> findAllOrders();
 
