@@ -16,7 +16,7 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "checkin")
-public class Checkin {
+public class Checkin extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

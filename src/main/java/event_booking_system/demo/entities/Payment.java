@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "payment")
-public class Payment {
+public class Payment extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

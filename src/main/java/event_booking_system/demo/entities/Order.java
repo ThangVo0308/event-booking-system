@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -18,7 +19,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "order")
-public class Order {
+public class Order extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
@@ -27,19 +28,18 @@ public class Order {
     @JoinColumn(name = "user_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_order_user", foreignKeyDefinition =
                     "FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+    @JsonManagedReference
     User user;
 
     @ManyToOne
     @JoinColumn(name = "ticket_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_order_ticket", foreignKeyDefinition =
                     "FOREIGN KEY (ticket_id) REFERENCES ticket(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+    @JsonManagedReference
     Ticket ticket;
 
     @Column(name = "quantity", nullable = false)
     Integer quantity;
-
-    @Column(name = "total_price", nullable = false)
-    Double price;
 
     @Column(nullable = false, name = "status")
     @Enumerated(EnumType.STRING)
@@ -52,4 +52,8 @@ public class Order {
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     Checkin checkin;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    List<OrderItem> orderItems;
 }

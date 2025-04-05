@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "media")
-public class Media {
+public class Media extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

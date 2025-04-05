@@ -57,7 +57,6 @@ public class OrderServiceImpl implements OrderService {
         existingOrder.setUser(order.getUser());
         existingOrder.setTicket(order.getTicket());
         existingOrder.setQuantity(order.getQuantity());
-        existingOrder.setPrice(order.getPrice());
         existingOrder.setStatus(order.getStatus());
         return orderRepository.save(existingOrder);
     }

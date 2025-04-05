@@ -1,9 +1,6 @@
 package event_booking_system.demo.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
@@ -30,6 +27,7 @@ public abstract class AbstractEntity {
     String createdBy;
 
     @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     Date createdAt;
 
@@ -38,6 +36,7 @@ public abstract class AbstractEntity {
     String updatedBy;
 
     @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
     Date updatedAt;
 
