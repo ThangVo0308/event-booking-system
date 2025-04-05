@@ -41,6 +41,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.CHARACTERS;
 
@@ -67,6 +68,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @NonFinal
     @Value("${jwt.refreshSignerKey}")
     protected String REFRESH_SIGNER_KEY;
+
+    @NonFinal
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @NonFinal
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
 
     @Override
     public void signUp(User user, String confirmationPassword, boolean terms, boolean isOrganizer) {
@@ -273,22 +282,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String generateToken(User user) {
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+    public String generateToken(User user, boolean isRefresh) {
+        JWSHeader accessHeader = new JWSHeader(JWSAlgorithm.HS512);
+        JWSHeader refreshHeader = new JWSHeader(JWSAlgorithm.ES384);
+
+        Date expiryTime = isRefresh
+                ? new Date(Instant.now().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                : new Date(Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli());
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getId())
                 .issuer("event-booking-system")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .jwtID(UUID.randomUUID().toString())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
-        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
+        JWSObject jwsObject = isRefresh
+                ? new JWSObject(refreshHeader, payload)
+                : new JWSObject(accessHeader, payload);
 
         try {
-            jwsObject.sign(new MACSigner(ACCESS_SIGNER_KEY.getBytes()));
+            if (isRefresh) jwsObject.sign(new MACSigner(REFRESH_SIGNER_KEY.getBytes()));
+            else jwsObject.sign(new MACSigner(ACCESS_SIGNER_KEY.getBytes()));
 
             return jwsObject.serialize();
         } catch (JOSEException e) {
