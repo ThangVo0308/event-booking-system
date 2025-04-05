@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 public interface TicketMapper {
     TicketMapper INSTANCE = Mappers.getMapper(TicketMapper.class);
 
-    TicketMapper toTicket(TicketRequest request);
+    Ticket toTicket(TicketRequest request);
 
     TicketResponse toTicketResponse(Ticket ticket);
 
