@@ -32,6 +32,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,13 +55,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.CHARACTERS;
 import static event_booking_system.demo.exceptions.authenication.AuthenticationErrorCode.PROVIDER_NOT_SUPPORTED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@PropertySource("application.properties")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImpl implements AuthenticationService {
     UserService userService;
@@ -73,6 +74,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     EmailValidator emailValidator;
     PasswordValidator passwordValidator;
+
+    public static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     @NonFinal
     @Value("${security.oauth2.client.registration.google.client-id}")
@@ -226,7 +229,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         expiryAccessTime.getTime() - System.currentTimeMillis());
             }
 
-            SignedJWT signedRefreshTokenJWT = verifyToken(accessToken, true);
+            SignedJWT signedRefreshTokenJWT = verifyToken(refreshToken, true);
             Date expiryRefreshTime = signedRefreshTokenJWT.getJWTClaimsSet().getExpirationTime();
 
             if (expiryRefreshTime.after(new Date())) {
@@ -363,7 +366,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .subject(user.getId())
                 .issuer("event-booking-system")
                 .issueTime(new Date())
-                .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()))
+                .expirationTime(expiryTime)
                 .jwtID(UUID.randomUUID().toString())
                 .build();
 

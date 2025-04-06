@@ -11,6 +11,8 @@ import event_booking_system.demo.mappers.CheckinMapper;
 import event_booking_system.demo.services.CheckinService;
 import event_booking_system.demo.services.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +31,11 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/checkins")
+@RequestMapping("/checkin")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Checkin APIs")
 public class CheckinController {
 
     CheckinService checkinService;
@@ -40,6 +43,7 @@ public class CheckinController {
     Translator translator;
     CheckinMapper checkinMapper = CheckinMapper.INSTANCE;
 
+    @Operation(summary = "Get all check-ins", description = "Retrieve all check-ins with pagination")
     @GetMapping
     public ResponseEntity<PaginationResponse<CheckinResponse>> findAll(
             @RequestParam(defaultValue = "0") String offset,
@@ -61,6 +65,7 @@ public class CheckinController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Create a new check-in", description = "Create a new check-in for a given order")
     @PostMapping
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<CheckinResponse> create(@RequestBody @Valid CheckinRequest request) {
@@ -74,6 +79,7 @@ public class CheckinController {
                 .body(checkinMapper.toCheckinResponse(savedCheckin));
     }
 
+    @Operation(summary = "Update an existing check-in", description = "Update details of an existing check-in")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CheckinResponse> update(@PathVariable String id, @RequestBody @Valid CheckinRequest request) {
@@ -88,6 +94,7 @@ public class CheckinController {
                 .body(checkinMapper.toCheckinResponse(updatedCheckin));
     }
 
+    @Operation(summary = "Delete a check-in", description = "Delete a check-in entry by its ID")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
@@ -95,6 +102,7 @@ public class CheckinController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Search check-ins by QR code", description = "Search for a check-in entry by its QR code")
     @GetMapping("/search")
     public ResponseEntity<PaginationResponse<CheckinResponse>> search(
             @RequestParam(defaultValue = "") String qrCode,

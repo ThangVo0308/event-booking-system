@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.Id;
 
-import javax.print.attribute.standard.Media;
 import java.util.Date;
 import java.util.List;
 
@@ -18,20 +16,19 @@ import java.util.List;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "event")
+@Table(name = "events")
 public class Event extends AbstractEntity{
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(name = "event_name", unique = true, nullable = false, length = 100)
+    @Column(name = "event_name", nullable = false)
     String event_name;
 
-    @Column(name = "description", unique = true, nullable = false, length = 100)
+    @Column(name = "description")
     String description;
 
-    @Column(name = "location", unique = true, nullable = false, length = 100)
+    @Column(name = "location", nullable = false, length = 255)
     String location;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -44,8 +41,8 @@ public class Event extends AbstractEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_event_user", foreignKeyDefinition =
-            "FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+            foreignKey = @ForeignKey(name = "fk_events_users", foreignKeyDefinition =
+            "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE"))
     User user;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)

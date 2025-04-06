@@ -16,7 +16,7 @@ import java.util.List;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "ticket")
+@Table(name = "tickets")
 public class Ticket extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,8 +24,8 @@ public class Ticket extends AbstractEntity{
 
     @ManyToOne
     @JoinColumn(name = "event_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_ticket_event", foreignKeyDefinition =
-                    "FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+            foreignKey = @ForeignKey(name = "fk_tickets_events", foreignKeyDefinition =
+                    "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE ON UPDATE CASCADE"))
     Event event;
 
     @Column(nullable = false, name="ticket_type")

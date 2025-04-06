@@ -13,6 +13,8 @@ import event_booking_system.demo.exceptions.authenication.AuthenticationExceptio
 import event_booking_system.demo.mappers.UserMapper;
 import event_booking_system.demo.services.AuthenticationService;
 import event_booking_system.demo.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -38,11 +40,13 @@ import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Authentication APIs")
 public class AuthenticationController {
     AuthenticationService authenticationService;
     UserService userService;
     UserMapper userMapper = UserMapper.INSTANCE;
 
+    @Operation(summary = "Sign up a new user", description = "Create a new user account and send email verification")
     @PostMapping("/sign-up")
     @ResponseStatus(HttpStatus.OK)
     ResponseEntity<SignUpResponse> signUp(@RequestBody @Valid SignUpRequest request) {
@@ -56,6 +60,7 @@ public class AuthenticationController {
                 new SignUpResponse(getLocalizedMessage("sign_up_success"), user.getId()));
     }
 
+    @Operation(summary = "Sign in", description = "Authenticate user and generate access & refresh tokens")
     @PostMapping("/sign-in")
     @ResponseStatus(HttpStatus.OK)
     @RateLimit(keysType = {BY_IP})
@@ -72,6 +77,7 @@ public class AuthenticationController {
                         .build());
     }
 
+    @Operation(summary = "Refresh access token", description = "Generate a new access token using a refresh token")
     @PostMapping("/refresh")
     @ResponseStatus(HttpStatus.OK)
     @RateLimit(keysType = { BY_TOKEN })
@@ -94,6 +100,7 @@ public class AuthenticationController {
         );
     }
 
+    @Operation(summary = "Verify email", description = "Verify user's email using the verification code sent to email")
     @PostMapping("/verify-email-by-code")
     @ResponseStatus(HttpStatus.OK)
     ResponseEntity<String> verifyEmail(@RequestBody @Valid VerifyEmailByCodeRequest request) {
@@ -103,7 +110,7 @@ public class AuthenticationController {
 
         return ResponseEntity.status(HttpStatus.OK).body(getLocalizedMessage("verify_email_success"));
     }
-
+    @Operation(summary = "Introspect token", description = "Check whether the given token is valid")
     @PostMapping("/introspect")
     @ResponseStatus(OK)
     ResponseEntity<IntrospectResponse> introspect(@RequestBody @Valid IntrospectRequest request)
@@ -113,6 +120,7 @@ public class AuthenticationController {
         return ResponseEntity.status(OK).body(new IntrospectResponse(isValid));
     }
 
+    @Operation(summary = "Social sign-in URL", description = "Get the URL for social login (e.g., Google, Facebook)")
     @PostMapping("/social")
     @ResponseStatus(OK)
     @RateLimit(keysType = { BY_IP })
@@ -128,6 +136,7 @@ public class AuthenticationController {
         return ResponseEntity.status(OK).body(url);
     }
 
+    @Operation(summary = "Callback after social sign-in", description = "Process social sign-in callback to complete the authentication")
     @GetMapping("/social/callback")
     @ResponseStatus(OK)
     @RateLimit(keysType = { BY_IP })

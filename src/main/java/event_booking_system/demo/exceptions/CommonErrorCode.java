@@ -11,6 +11,7 @@ public enum CommonErrorCode {
     TICKET_NOT_FOUND("TICKET-NOT-FOUND", "ticket_not_found"),
     ORDER_NOT_FOUND("ORDER-NOT-FOUND", "order_not_found"),
     PAYMENT_NOT_FOUND("PAYMENT-NOT-FOUND", "payment_not_found"),
+    MEDIA_NOT_FOUND("MEDIA-NOT-FOUND", "media_not_found"),
     CHECKIN_NOT_FOUND("CHECKIN-NOT-FOUND", "checkin_not_found"),
     QR_CODE_ALREADY_USED("QRCODE-ALREADY-USED", "qrcode_already_used"),
     INSUFFICIENT_TICKETS("INSUFFICIENT-TICKETS", "insufficient_tickets"),

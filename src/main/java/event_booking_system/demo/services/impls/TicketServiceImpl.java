@@ -69,7 +69,7 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<Ticket> findTicketsByType(TicketType type) {
-        return ticketRepository.findByTicketType(type);
+        return ticketRepository.findByType(type);
     }
 
     @Override

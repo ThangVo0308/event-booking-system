@@ -18,7 +18,7 @@ import java.util.List;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 public class Order extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,15 +26,15 @@ public class Order extends AbstractEntity{
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_order_user", foreignKeyDefinition =
-                    "FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+            foreignKey = @ForeignKey(name = "fk_orders_users", foreignKeyDefinition =
+                    "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE"))
     @JsonManagedReference
     User user;
 
     @ManyToOne
     @JoinColumn(name = "ticket_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_order_ticket", foreignKeyDefinition =
-                    "FOREIGN KEY (ticket_id) REFERENCES ticket(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+            foreignKey = @ForeignKey(name = "fk_orders_tickets", foreignKeyDefinition =
+                    "FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE ON UPDATE CASCADE"))
     @JsonManagedReference
     Ticket ticket;
 

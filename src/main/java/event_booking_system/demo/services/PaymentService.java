@@ -16,11 +16,9 @@ public interface PaymentService {
 
     void deletePayment(String id);
 
-    Optional<Payment> findPaymentById(String id);
+    Payment findPaymentById(String id);
 
     List<Payment> findAllPayments();
-
-    Optional<Payment> findPaymentByOrder(Order order);
 
     List<Payment> findPaymentsByStatus(PaymentStatus status);
 

@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,9 +19,8 @@ import java.util.List;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User extends AbstractEntity{
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

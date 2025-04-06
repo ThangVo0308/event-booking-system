@@ -70,7 +70,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> findEventsByLocation(String location) {
-        return eventRepository.findByLocations(location);
+        return eventRepository.findByLocation(location);
     }
 
     @Override

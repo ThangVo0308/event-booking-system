@@ -50,9 +50,9 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Optional<Payment> findPaymentById(String id) {
-        return Optional.ofNullable(paymentRepository.findById(id)
-                .orElseThrow(() -> new AppException(PAYMENT_NOT_FOUND, NOT_FOUND)));
+    public Payment findPaymentById(String id) {
+        return paymentRepository.findById(id)
+                .orElseThrow(() -> new AppException(PAYMENT_NOT_FOUND, NOT_FOUND));
     }
 
     @Override
@@ -61,18 +61,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Optional<Payment> findPaymentByOrder(Order order) {
-        return Optional.ofNullable(paymentRepository.findByOrderId(order.getId())
-                .orElseThrow(() -> new AppException(PAYMENT_NOT_FOUND, NOT_FOUND)));
-    }
-
-    @Override
     public List<Payment> findPaymentsByStatus(PaymentStatus status) {
-        return paymentRepository.findByPaymentStatus(status);
+        return paymentRepository.findByStatus(status);
     }
 
     @Override
     public List<Payment> findPaymentsByOrderAndStatus(Order order, PaymentStatus status) {
-        return paymentRepository.findByOrderIdAndPaymentStatus(order.getId(), status);
+        return paymentRepository.findByOrderIdAndStatus(order.getId(), status);
     }
 }

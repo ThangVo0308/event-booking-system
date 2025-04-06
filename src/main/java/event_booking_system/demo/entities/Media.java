@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "media")
+@Table(name = "medias")
 public class Media extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,8 +21,8 @@ public class Media extends AbstractEntity{
 
     @ManyToOne
     @JoinColumn(name = "event_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_media_event", foreignKeyDefinition =
-                    "FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE ON UPDATE CASCADE"))
+            foreignKey = @ForeignKey(name = "fk_medias_events", foreignKeyDefinition =
+                    "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE ON UPDATE CASCADE"))
     Event event;
 
     @Column(nullable = false, name = "media_type")

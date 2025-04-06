@@ -10,6 +10,8 @@ import event_booking_system.demo.entities.User;
 import event_booking_system.demo.mappers.EventMapper;
 import event_booking_system.demo.services.EventService;
 import event_booking_system.demo.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Event APIs")
 public class EventController {
 
     EventService eventService;
@@ -39,6 +42,7 @@ public class EventController {
     Translator translator;
     EventMapper eventMapper = EventMapper.INSTANCE;
 
+    @Operation(summary = "Get all events", description = "Retrieve all events with pagination")
     @GetMapping
     public ResponseEntity<PaginationResponse<EventResponse>> findAll(
             @RequestParam(defaultValue = "0") String offset,
@@ -60,6 +64,7 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Create a new event", description = "Create a new event associated with a user")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventResponse> create(@RequestBody @Valid EventRequest request) {
@@ -73,6 +78,7 @@ public class EventController {
                 .body(eventMapper.toEventResponse(savedEvent));
     }
 
+    @Operation(summary = "Update an existing event", description = "Update the details of an existing event")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventResponse> update(@PathVariable String id, @RequestBody @Valid EventRequest request) {
@@ -87,6 +93,7 @@ public class EventController {
                 .body(eventMapper.toEventResponse(updatedEvent));
     }
 
+    @Operation(summary = "Delete an event", description = "Delete an event by its ID")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
@@ -94,6 +101,7 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Search events by name", description = "Search for events by their name")
     @GetMapping("/search")
     public ResponseEntity<PaginationResponse<EventResponse>> search(
             @RequestParam(defaultValue = "") String name,

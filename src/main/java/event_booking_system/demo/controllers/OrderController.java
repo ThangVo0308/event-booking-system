@@ -15,6 +15,8 @@ import event_booking_system.demo.mappers.OrderMapper;
 import event_booking_system.demo.services.OrderService;
 import event_booking_system.demo.services.TicketService;
 import event_booking_system.demo.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Order APIs")
+
 public class OrderController {
 
     OrderService orderService;
@@ -43,7 +47,7 @@ public class OrderController {
     TicketService ticketService;
     Translator translator;
     OrderMapper orderMapper = OrderMapper.INSTANCE;
-
+    @Operation(summary = "Get all orders", description = "Retrieve all orders with pagination")
     @GetMapping
     public ResponseEntity<PaginationResponse<OrderResponse>> findAll(
             @RequestParam(defaultValue = "0") String offset,
@@ -65,6 +69,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Create a new order", description = "Create a new order for a user and ticket")
     @PostMapping
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<OrderResponse> create(@RequestBody @Valid OrderRequest request) {
@@ -81,6 +86,7 @@ public class OrderController {
                 .body(orderMapper.toOrderResponse(savedOrder));
     }
 
+    @Operation(summary = "Update an existing order", description = "Update the details of an existing order")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrderResponse> update(@PathVariable String id, @RequestBody @Valid OrderRequest request) {
@@ -98,13 +104,14 @@ public class OrderController {
                 .body(orderMapper.toOrderResponse(updatedOrder));
     }
 
+    @Operation(summary = "Delete an order", description = "Delete an existing order by its ID")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         orderService.deleteOrder(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
+    @Operation(summary = "Get orders by user", description = "Retrieve orders made by a specific user")
     @GetMapping("/user/{userId}")
     public ResponseEntity<PaginationResponse<OrderResponse>> findOrdersByUser(
             @PathVariable String userId,
@@ -129,6 +136,7 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Search orders by status", description = "Search for orders by their status (e.g., pending, completed)")
     @GetMapping("/search")
     public ResponseEntity<PaginationResponse<OrderResponse>> search(
             @RequestParam(defaultValue = "") String status,

@@ -1,7 +1,10 @@
 package event_booking_system.demo.validates;
 
+import org.springframework.stereotype.Component;
+
 import java.util.regex.Pattern;
 
+@Component
 public class EmailValidator {
     private static final String EMAIL_REGEX =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";

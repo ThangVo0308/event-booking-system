@@ -15,9 +15,9 @@ public interface TicketRepository extends JpaRepository<Ticket, String> {
 
     List<Ticket> findByEventId(String eventId);
 
-    List<Ticket> findByTicketType(TicketType ticketType);
+    List<Ticket> findByType(TicketType ticketType);
 
-    @Query("SELECT t from ticket WHERE t.available_quantity > 0 AND t.event.id = :eventId")
+    @Query("SELECT t FROM Ticket t WHERE t.available_quantity > 0 AND t.event.id = :eventId")
     List<Ticket> findAvailableTicketByEventId(String eventId);
 
     List<Ticket> findByPrice(Double price);

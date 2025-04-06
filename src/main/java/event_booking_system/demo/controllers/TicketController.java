@@ -14,6 +14,8 @@ import event_booking_system.demo.exceptions.authenication.AuthenticationExceptio
 import event_booking_system.demo.mappers.TicketMapper;
 import event_booking_system.demo.services.EventService;
 import event_booking_system.demo.services.TicketService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Ticket APIs")
 public class TicketController {
 
     TicketService ticketService;
@@ -42,6 +45,7 @@ public class TicketController {
     Translator translator;
     TicketMapper ticketMapper = TicketMapper.INSTANCE;
 
+    @Operation(summary = "Get all tickets", description = "Retrieve all tickets with pagination")
     @GetMapping
     public ResponseEntity<PaginationResponse<TicketResponse>> findAll(
             @RequestParam(defaultValue = "0") String offset,
@@ -63,6 +67,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Create a new ticket", description = "Create a new ticket associated with an event")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TicketResponse> create(@RequestBody @Valid TicketRequest request) {
@@ -77,6 +82,7 @@ public class TicketController {
                 .body(ticketMapper.toTicketResponse(savedTicket));
     }
 
+    @Operation(summary = "Update an existing ticket", description = "Update the details of an existing ticket")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TicketResponse> update(@PathVariable String id, @RequestBody @Valid TicketRequest request) {
@@ -92,6 +98,7 @@ public class TicketController {
                 .body(ticketMapper.toTicketResponse(updatedTicket));
     }
 
+    @Operation(summary = "Delete a ticket", description = "Delete a ticket by its ID")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable String id) {
@@ -99,6 +106,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Operation(summary = "Get tickets by event", description = "Retrieve all tickets associated with a specific event")
     @GetMapping("/event/{eventId}")
     public ResponseEntity<PaginationResponse<TicketResponse>> findTicketsByEvent(
             @PathVariable String eventId,
@@ -124,6 +132,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Get tickets by type", description = "Retrieve tickets of a specific type")
     @GetMapping("/type/{type}")
     public ResponseEntity<PaginationResponse<TicketResponse>> findTicketsByType(
             @PathVariable String type,
@@ -153,6 +162,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Get available tickets by event", description = "Retrieve available tickets for a specific event")
     @GetMapping("/available/event/{eventId}")
     public ResponseEntity<PaginationResponse<TicketResponse>> findAvailableTicketsByEvent(
             @PathVariable String eventId,
@@ -178,6 +188,7 @@ public class TicketController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Search tickets by price", description = "Search for tickets based on their price")
     @GetMapping("/search")
     public ResponseEntity<PaginationResponse<TicketResponse>> search(
             @RequestParam(defaultValue = "") String price,

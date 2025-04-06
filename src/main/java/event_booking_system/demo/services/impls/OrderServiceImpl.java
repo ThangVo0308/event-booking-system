@@ -8,7 +8,7 @@ import event_booking_system.demo.exceptions.AppException;
 import event_booking_system.demo.repositories.OrderRepository;
 import event_booking_system.demo.repositories.PaymentRepository;
 import event_booking_system.demo.repositories.TicketRepository;
-import event_booking_system.demo.service.OrderService;
+import event_booking_system.demo.services.OrderService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -70,9 +70,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Optional<Order> findOrderById(String id) {
-        return Optional.ofNullable(orderRepository.findById(id)
-                .orElseThrow(() -> new AppException(ORDER_NOT_FOUND, NOT_FOUND)));
+    public Order findOrderById(String id) {
+        return orderRepository.findById(id)
+                .orElseThrow(() -> new AppException(ORDER_NOT_FOUND, NOT_FOUND));
     }
 
     @Override

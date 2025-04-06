@@ -15,7 +15,7 @@ public interface MediaService {
 
     void deleteMedia(String id);
 
-    Optional<Media> findMediaById(String id);
+    Media findMediaById(String id);
 
     List<Media> findAllMedia();
 
@@ -24,6 +24,4 @@ public interface MediaService {
     List<Media> findMediaByType(MediaType type);
 
     List<Media> findMediaByEventAndType(Event event, MediaType type);
-
-    Optional<Media> findMediaByUrl(String mediaUrl);
 }

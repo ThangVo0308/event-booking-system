@@ -31,16 +31,16 @@ public class OrderItem extends AbstractEntity{
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_order_items_order",
-                    foreignKeyDefinition = "FOREIGN KEY (order_id) REFERENCES order(id) ON DELETE CASCADE ON UPDATE CASCADE"),
+            foreignKey = @ForeignKey(name = "fk_order_items_orders",
+                    foreignKeyDefinition = "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE ON UPDATE CASCADE"),
             nullable = false, updatable = false)
     @JsonManagedReference
     Order order;
 
     @ManyToOne
     @JoinColumn(name = "event_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_order_items_event",
-                    foreignKeyDefinition = "FOREIGN KEY (event_id) REFERENCES event(id) ON DELETE CASCADE ON UPDATE CASCADE"),
+            foreignKey = @ForeignKey(name = "fk_order_items_events",
+                    foreignKeyDefinition = "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE ON UPDATE CASCADE"),
             nullable = false, updatable = false)
     @JsonManagedReference
     Event event;

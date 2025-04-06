@@ -1,6 +1,7 @@
 package event_booking_system.demo.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import event_booking_system.demo.enums.CheckinStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +16,7 @@ import java.util.Date;
 @SuperBuilder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "checkin")
+@Table(name = "checkins")
 public class Checkin extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,8 +24,8 @@ public class Checkin extends AbstractEntity{
 
     @OneToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_checkin_order",
-                    foreignKeyDefinition = "FOREIGN KEY (order_id) REFERENCES order(id) ON DELETE CASCADE ON UPDATE CASCADE"),
+            foreignKey = @ForeignKey(name = "fk_checkins_orders",
+                    foreignKeyDefinition = "FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE ON UPDATE CASCADE"),
             nullable = false, updatable = false)
     @JsonManagedReference
     Order order;
@@ -35,4 +36,8 @@ public class Checkin extends AbstractEntity{
 
     @Column(name = "qr_code", unique = true, nullable = false)
     String qrCode;
+
+    @Enumerated
+    @Column(name = "status", nullable = false)
+    CheckinStatus status;
 }

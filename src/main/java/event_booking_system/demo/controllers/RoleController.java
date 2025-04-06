@@ -7,6 +7,8 @@ import event_booking_system.demo.dtos.responses.role.RoleResponse;
 import event_booking_system.demo.entities.Role;
 import event_booking_system.demo.mappers.RoleMapper;
 import event_booking_system.demo.services.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +30,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Role APIs")
 public class RoleController {
 
     RoleService roleService;
     Translator translator;
     RoleMapper roleMapper = RoleMapper.INSTANCE;
 
+    @Operation(summary = "Get all roles", description = "Retrieve all roles with pagination")
     @GetMapping
     public ResponseEntity<PaginationResponse<RoleResponse>> findAll(
             @RequestParam(defaultValue = "0") String offset,
@@ -55,6 +59,7 @@ public class RoleController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Search roles by name", description = "Search for roles by their name")
     @GetMapping("/search")
     public ResponseEntity<PaginationResponse<RoleResponse>> search(
             @RequestParam(defaultValue = "") String name,
