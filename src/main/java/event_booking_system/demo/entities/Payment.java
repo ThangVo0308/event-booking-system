@@ -2,6 +2,7 @@ package event_booking_system.demo.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import event_booking_system.demo.enums.MediaType;
+import event_booking_system.demo.enums.PaymentMethod;
 import event_booking_system.demo.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,6 +21,10 @@ public class Payment extends AbstractEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+
+    @Column(nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    PaymentMethod method;
 
     @OneToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id",

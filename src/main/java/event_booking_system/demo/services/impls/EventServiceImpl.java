@@ -53,9 +53,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Optional<Event> findEventById(String id) {
-        return Optional.ofNullable(eventRepository.findById(id)
-                .orElseThrow(() -> new AppException(EVENT_NOT_FOUND, NOT_FOUND)));
+    public Event findEventById(String id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new AppException(EVENT_NOT_FOUND, NOT_FOUND));
     }
 
     @Override

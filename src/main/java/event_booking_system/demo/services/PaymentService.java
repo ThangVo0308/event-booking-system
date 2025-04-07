@@ -1,26 +1,22 @@
-package event_booking_system.demo.service;
+package event_booking_system.demo.services;
 
+import event_booking_system.demo.dtos.responses.vnpay.VNPayResponse;
 import event_booking_system.demo.entities.Order;
 import event_booking_system.demo.entities.Payment;
 import event_booking_system.demo.enums.PaymentStatus;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface PaymentService {
 
-    // Tạo mới một payment
-    Payment createPayment(Payment payment);
+    Payment findById(String id);
 
-    Payment updatePayment(Payment payment);
+    VNPayResponse createVNPayPayment(long amount, String orderId, HttpServletRequest request);
 
-    void deletePayment(String id);
+    boolean verifyVNPayPayment(Map<String, String> params, String orderId, String secureHash);
 
-    Payment findPaymentById(String id);
-
-    List<Payment> findAllPayments();
-
-    List<Payment> findPaymentsByStatus(PaymentStatus status);
-
-    List<Payment> findPaymentsByOrderAndStatus(Order order, PaymentStatus status);
+    Payment create(double amount, String orderId);
 }
