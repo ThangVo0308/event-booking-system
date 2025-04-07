@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -140,9 +141,10 @@ public class AuthenticationController {
     @GetMapping("/social/callback")
     @ResponseStatus(OK)
     @RateLimit(keysType = { BY_IP })
-    ResponseEntity<SignInResponse> socialCallback(@RequestParam String code, @RequestParam String provider) {
+    ResponseEntity<SignInResponse> socialCallback(@RequestParam String code, @RequestParam(defaultValue = "google") String provider) {
         SocialType type;
         Map<String, Object> userInfo;
+
         try {
             type = SocialType.valueOf(provider.trim().toUpperCase());
             userInfo = authenticationService.fetchSocialUser(code, type); // get user info from social

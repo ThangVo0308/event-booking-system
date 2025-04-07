@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,24 +33,33 @@ public class GoogleAuthorizationCodeTokenRequest {
     String redirectUri;
 
     public String getAccessToken() throws Exception {
+        String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8.toString());
+        log.info("Decoded authorization code: {}", decodedCode);
+
         HttpRequestFactory requestFactory = transport.createRequestFactory();
         Map<String, String> parameters = new HashMap<>();
         parameters.put("client_id", clientId);
         parameters.put("client_secret", clientSecret);
-        parameters.put("code", code);
+        parameters.put("code", decodedCode);
         parameters.put("redirect_uri", redirectUri);
         parameters.put("grant_type", "authorization_code");
+
+        log.info("Token request parameters: {}", parameters);
 
         HttpRequest request = requestFactory.buildPostRequest(
                 new GenericUrl(tokenUrl),
                 new UrlEncodedContent(parameters)
         );
 
-        String response = request.execute().parseAsString();
-
-        // Lấy access_token từ JSON response
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(response);
-        return jsonNode.get("access_token").asText(); // Trả về giá trị access_token
+        try {
+            String response = request.execute().parseAsString();
+            log.info("Token response: {}", response);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(response);
+            return jsonNode.get("access_token").asText();
+        } catch (HttpResponseException e) {
+            log.error("Error response from Google: {}", e.getContent());
+            throw e;
+        }
     }
 }

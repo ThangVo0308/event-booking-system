@@ -57,6 +57,8 @@ import java.util.UUID;
 
 import static event_booking_system.demo.exceptions.authenication.AuthenticationErrorCode.PROVIDER_NOT_SUPPORTED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static com.nimbusds.jose.JWSAlgorithm.HS384;
+import static com.nimbusds.jose.JWSAlgorithm.HS512;
 
 @Service
 @RequiredArgsConstructor
@@ -76,6 +78,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     PasswordValidator passwordValidator;
 
     public static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    public static final JWSAlgorithm ACCESS_TOKEN_SIGNATURE_ALGORITHM = HS512;
+
+    public static final JWSAlgorithm REFRESH_TOKEN_SIGNATURE_ALGORITHM = HS384;
 
     @NonFinal
     @Value("${security.oauth2.client.registration.google.client-id}")
@@ -163,25 +169,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AuthenticationException(AuthenticationErrorCode.INVALID_EMAIL, HttpStatus.BAD_REQUEST);
         }
 
-        if(passwordValidator.isWeakPassword(user.getPassword())) {
-            throw new AuthenticationException(AuthenticationErrorCode.WEAK_PASSWORD, HttpStatus.BAD_REQUEST);
-        }
+//        if(passwordValidator.isWeakPassword(user.getPassword())) {
+//            throw new AuthenticationException(AuthenticationErrorCode.WEAK_PASSWORD, HttpStatus.BAD_REQUEST);
+//        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setStatus(UserStatus.ACTIVE);
 
-        try {
-            User newUser = userService.createUser(user);
+        Role role;
+        if (isOrganizer) {
+            role = roleService.findByName("ORGANIZER");
+        }else {
+            role = roleService.findByName("USER");
+        }
+        user.setRole(role);
 
-            if (isOrganizer) {
-                Role role = roleService.findByName("ORGANIZER");
-                newUser.setRole(role);
-            }else {
-                Role role = roleService.findByName("USER");
-                newUser.setRole(role);
-            }
-            userService.updateUser(newUser);
-        } catch(DataIntegrityViolationException exception) {
+        try {
+            userService.createUser(user);
+        } catch(DataIntegrityViolationException | IllegalStateException e) {
             throw new AuthenticationException(AuthenticationErrorCode.CREATE_USER_FAILED, HttpStatus.CONFLICT);
         }
     }
@@ -190,11 +195,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public User signIn(String email, String password) {
         User user = userService.findUserByEmail(email);
 
-        if (userService.existsByEmail(user.getEmail())) {
-            throw new AuthenticationException(AuthenticationErrorCode.EMAIL_ALREADY_IN_USE, HttpStatus.CONFLICT);
-        }
-
-        if(!user.getPassword().equals(password)) {
+        if(!passwordEncoder.matches(password, user.getPassword())) {
             throw new AuthenticationException(AuthenticationErrorCode.PASSWORD_MIS_MATCH, HttpStatus.BAD_REQUEST);
         }
 
@@ -202,9 +203,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new AuthenticationException(AuthenticationErrorCode.INVALID_EMAIL, HttpStatus.BAD_REQUEST);
         }
 
-        if(passwordValidator.isWeakPassword(user.getPassword())) {
-            throw new AuthenticationException(AuthenticationErrorCode.WEAK_PASSWORD, HttpStatus.BAD_REQUEST);
-        }
+//        if(passwordValidator.isWeakPassword(user.getPassword())) {
+//            throw new AuthenticationException(AuthenticationErrorCode.WEAK_PASSWORD, HttpStatus.BAD_REQUEST);
+//        }
 
         if (user.getStatus() == UserStatus.BANNED) {
             throw new AuthenticationException(AuthenticationErrorCode.USER_BANNED, HttpStatus.CONFLICT);
@@ -355,8 +356,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String generateToken(User user, boolean isRefresh) {
+        // Access Token: sử dụng HS512 (HMAC SHA-512)
         JWSHeader accessHeader = new JWSHeader(JWSAlgorithm.HS512);
-        JWSHeader refreshHeader = new JWSHeader(JWSAlgorithm.ES384);
+        // Refresh Token: sử dụng HS384 (HMAC SHA-384)
+        JWSHeader refreshHeader = new JWSHeader(JWSAlgorithm.HS384);
 
         Date expiryTime = isRefresh
                 ? new Date(Instant.now().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
@@ -377,15 +380,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 : new JWSObject(accessHeader, payload);
 
         try {
-            if (isRefresh) jwsObject.sign(new MACSigner(REFRESH_SIGNER_KEY.getBytes()));
-            else jwsObject.sign(new MACSigner(ACCESS_SIGNER_KEY.getBytes()));
+            if (isRefresh) {
+                // Sử dụng HS384 signer cho refresh token
+                jwsObject.sign(new MACSigner(REFRESH_SIGNER_KEY.getBytes()));
+            } else {
+                // Sử dụng HS512 signer cho access token
+                jwsObject.sign(new MACSigner(ACCESS_SIGNER_KEY.getBytes()));
+            }
 
             return jwsObject.serialize();
         } catch (JOSEException e) {
-            log.error("Cannot create token: "+ e);
+            log.error("Cannot create token: " + e);
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public User refreshToken(String refreshToken, HttpServletRequest request) throws ParseException, JOSEException{

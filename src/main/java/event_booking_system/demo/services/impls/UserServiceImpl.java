@@ -35,15 +35,8 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public User createUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Username already exists: " + user.getUsername());
-        }
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Email already exists: " + user.getEmail());
-        }
-        return userRepository.save(user);
-    }
+    @Transactional
+    public User createUser(User user) { return userRepository.save(user); }
 
     @Override
     public User updateUser(User user) {

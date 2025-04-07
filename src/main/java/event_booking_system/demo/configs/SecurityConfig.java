@@ -35,9 +35,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SecurityConfig {
-//    CustomJwtDecoder customJwtDecoder;
-    @Value("${jwt.accessSignerKey}")
-    String accessSignerKey;
+    CustomJwtDecoder customJwtDecoder;
 
     String[] PUBLIC_ENDPOINTS = {
             "/auth/sign-up",
@@ -72,7 +70,7 @@ public class SecurityConfig {
         // OAuth2
         http
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(
-                        jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                        jwtConfigurer -> jwtConfigurer.decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ));
 
@@ -80,16 +78,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(withDefaults());
         return http.build();
-    }
-
-    @Bean
-    JwtDecoder jwtDecoder() {
-        SecretKeySpec secretKeySpec = new SecretKeySpec(accessSignerKey.getBytes(), "HS512");// initial seckey key
-
-        return NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();// jwt encryption
     }
 
     @Bean
