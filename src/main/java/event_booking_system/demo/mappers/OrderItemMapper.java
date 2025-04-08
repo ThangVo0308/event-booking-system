@@ -16,9 +16,9 @@ public interface OrderItemMapper {
 
     @AfterMapping
     default void customizeDto(OrderItem entity, @MappingTarget OrderItemResponse dto) {
-        dto.setMEvent(
-                EventMapper.INSTANCE
-                        .toEventResponse(entity.getEvent()));
+        dto.setMTicket(
+                TicketMapper.INSTANCE
+                        .toTicketResponse(entity.getTicket()));
         dto.setCreatedAt(entity.getCreatedAt());
     }
 }

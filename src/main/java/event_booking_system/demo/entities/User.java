@@ -68,21 +68,4 @@ public class User extends AbstractEntity{
     @Column(name = "is_activated", nullable = false)
     boolean isActivated;
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", phone='" + phone + '\'' +
-                ", birthdate=" + birthdate +
-                ", gender=" + gender +
-                ", email='" + email + '\'' +
-                ", role=" + role +
-                ", event=" + event +
-                ", order=" + order +
-                ", status=" + status +
-                ", isActivated=" + isActivated +
-                '}';
-    }
 }

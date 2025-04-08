@@ -3,7 +3,9 @@ package event_booking_system.demo.services.impls;
 import event_booking_system.demo.configs.VNPayConfig;
 import event_booking_system.demo.dtos.responses.vnpay.VNPayResponse;
 import event_booking_system.demo.entities.Order;
+import event_booking_system.demo.entities.OrderItem;
 import event_booking_system.demo.entities.Payment;
+import event_booking_system.demo.entities.Ticket;
 import event_booking_system.demo.enums.OrderStatus;
 import event_booking_system.demo.enums.PaymentMethod;
 import event_booking_system.demo.enums.PaymentStatus;
@@ -14,8 +16,10 @@ import event_booking_system.demo.exceptions.order.OrderException;
 import event_booking_system.demo.exceptions.payment.PaymentErrorCode;
 import event_booking_system.demo.exceptions.payment.PaymentException;
 import event_booking_system.demo.repositories.PaymentRepository;
+import event_booking_system.demo.services.OrderItemService;
 import event_booking_system.demo.services.PaymentService;
 import event_booking_system.demo.services.OrderService;
+import event_booking_system.demo.services.TicketService;
 import event_booking_system.demo.vnpay.VNPayUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -31,7 +35,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static event_booking_system.demo.components.Translator.getLocalizedMessage;
+import static event_booking_system.demo.exceptions.CommonErrorCode.INSUFFICIENT_TICKETS;
 import static event_booking_system.demo.exceptions.CommonErrorCode.PAYMENT_NOT_FOUND;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Service
@@ -46,6 +52,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     OrderService orderService;
 
+    OrderItemService orderItemService;
+
+    TicketService ticketService;
+
     @Override
     public Payment findById(String id) {
         return paymentRepository.findById(id)
@@ -53,9 +63,28 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public VNPayResponse createVNPayPayment(long amount, String orderId, HttpServletRequest request) {
-        long vnpAmount = amount * 100L;
+    public VNPayResponse createVNPayPayment(String orderId, HttpServletRequest request) { // this function has 1 more param is long amount, this amount will be sent from frontend to backend
+//        long vnpAmount = amount * 100L;
+        long amount = 0;
 
+        List<OrderItem> orderItems = orderItemService.findByOrderId(orderId);
+
+        for (OrderItem orderItem : orderItems) {
+            if (orderItem.getOrder().getId().equals(orderId)) {
+                Ticket ticket = ticketService.findTicketById(orderItem.getTicket().getId());
+                int newAvailableQuantity = ticket.getAvailable_quantity() - orderItem.getQuantity();
+
+                amount += orderItem.getPrice();
+
+                if (newAvailableQuantity < 0) {
+                    throw new AppException(INSUFFICIENT_TICKETS, BAD_REQUEST);
+                }
+
+                ticket.setAvailable_quantity(newAvailableQuantity);
+            }
+        }
+        long vnpAmount = amount * 100L;
+        // VNPAY
         Map<String, String> vnpParamsMap = vnPayConfig.getVNPayConfig();
         vnpParamsMap.put("vnp_Amount", String.valueOf(vnpAmount));
 
@@ -113,12 +142,29 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment create(double amount, String orderId) {
-        Order order = orderService.findOrderById(orderId);
+    public Payment create(String orderId) { // this function has 1 more param is long amount, this amount will be sent from frontend to backend
+        double amount = 0;
 
-        if (amount <= 0) throw new PaymentException(PaymentErrorCode.PAYMENT_AMOUNT_INVALID, HttpStatus.BAD_REQUEST);
+        Order order = orderService.findOrderById(orderId);
         if (order == null) throw new PaymentException(PaymentErrorCode.PAYMENT_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
         if (order.getStatus() != OrderStatus.PENDING) throw new OrderException(OrderErrorCode.BOOKING_CHECK_PENDING, HttpStatus.BAD_REQUEST);
+
+        List<OrderItem> orderItems = orderItemService.findByOrderId(order.getId());
+
+        for (OrderItem orderItem : orderItems) {
+            if (orderItem.getOrder().getId().equals(order.getId())) {
+                Ticket ticket = ticketService.findTicketById(orderItem.getTicket().getId());
+                int newAvailableQuantity = ticket.getAvailable_quantity() - orderItem.getQuantity();
+
+                amount += orderItem.getPrice();
+
+                if (newAvailableQuantity < 0) {
+                    throw new AppException(INSUFFICIENT_TICKETS, BAD_REQUEST);
+                }
+
+                ticket.setAvailable_quantity(newAvailableQuantity);
+            }
+        }
 
         Payment payment = Payment.builder()
                 .price(amount)

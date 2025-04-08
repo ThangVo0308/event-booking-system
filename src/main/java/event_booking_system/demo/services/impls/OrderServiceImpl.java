@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,16 +39,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order createOrder(Order order) {
-        Ticket ticket = ticketRepository.findById(order.getTicket().getId())
-                .orElseThrow(() -> new AppException(TICKET_NOT_FOUND, NOT_FOUND));
-        int newAvailableQuantity = ticket.getAvailable_quantity() - order.getQuantity();
-        if (newAvailableQuantity < 0) {
-            throw new AppException(INSUFFICIENT_TICKETS, BAD_REQUEST);
-        }
-        ticket.setAvailable_quantity(newAvailableQuantity);
-        ticketRepository.save(ticket);
+        Order newOrder = Order.builder()
+                .user(order.getUser())
+                .status(OrderStatus.PENDING)
+                .updatedAt(new Date())
+                .build();
 
-        return orderRepository.save(order);
+        return orderRepository.save(newOrder);
     }
 
     @Override
@@ -55,8 +53,6 @@ public class OrderServiceImpl implements OrderService {
         Order existingOrder = orderRepository.findById(order.getId())
                 .orElseThrow(() -> new AppException(ORDER_NOT_FOUND, NOT_FOUND));
         existingOrder.setUser(order.getUser());
-        existingOrder.setTicket(order.getTicket());
-        existingOrder.setQuantity(order.getQuantity());
         existingOrder.setStatus(order.getStatus());
         return orderRepository.save(existingOrder);
     }
@@ -83,11 +79,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findOrdersByUser(User user) {
         return orderRepository.findByUserId(user.getId());
-    }
-
-    @Override
-    public List<Order> findOrdersByTicket(Ticket ticket) {
-        return orderRepository.findByTicketId(ticket.getId());
     }
 
     @Override

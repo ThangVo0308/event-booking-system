@@ -2,6 +2,7 @@ package event_booking_system.demo.dtos.responses.order;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import event_booking_system.demo.dtos.responses.event.EventResponse;
+import event_booking_system.demo.dtos.responses.ticket.TicketResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,6 +17,7 @@ import java.util.Date;
 public class OrderItemResponse {
     String id;
 
+    Integer quantity;
     Date orderTime;
 
     Date createdAt;
@@ -25,6 +27,6 @@ public class OrderItemResponse {
     @JsonProperty(value = "createdBy")
     String createdBy;
 
-    @JsonProperty(value = "event")
-    EventResponse mEvent;
+    @JsonProperty(value = "ticket")
+    TicketResponse mTicket;
 }

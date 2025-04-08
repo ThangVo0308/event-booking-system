@@ -22,8 +22,6 @@ public interface OrderService {
 
     List<Order> findOrdersByUser(User user);
 
-    List<Order> findOrdersByTicket(Ticket ticket);
-
     List<Order> findOrdersByStatus(OrderStatus status);
 
     List<Order> findOrdersByUserAndStatus(User user, OrderStatus status);

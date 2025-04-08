@@ -15,6 +15,7 @@ public enum CommonErrorCode {
     CHECKIN_NOT_FOUND("CHECKIN-NOT-FOUND", "checkin_not_found"),
     QR_CODE_ALREADY_USED("QRCODE-ALREADY-USED", "qrcode_already_used"),
     INSUFFICIENT_TICKETS("INSUFFICIENT-TICKETS", "insufficient_tickets"),
+    INVALID_TICKET("INVALID-TICKET", "invalid_ticket"),
     ;
 
     CommonErrorCode(String code, String message) {

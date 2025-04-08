@@ -6,9 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 
 public record OrderItemRequest(
-        @NotNull(message = "null_field") Date orderTime,
-        @NotNull(message = "null_field") Double price,
         @NotNull(message = "null_field") @NotBlank(message = "blank_field") String orderId,
-        @NotNull(message = "null_field") @NotBlank(message = "blank_field") String eventId
+        @NotNull(message = "null_field") @NotBlank(message = "blank_field") String ticketId,
+        @NotNull(message = "null_field") @NotBlank(message = "blank_field") Integer quantity
 ) {
 }

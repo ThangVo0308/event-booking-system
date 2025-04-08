@@ -52,9 +52,9 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public Optional<Ticket> findTicketById(String id) {
-        return Optional.ofNullable(ticketRepository.findById(id)
-                .orElseThrow(() -> new AppException(CommonErrorCode.TICKET_NOT_FOUND, NOT_FOUND)));
+    public Ticket findTicketById(String id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new AppException(CommonErrorCode.TICKET_NOT_FOUND, NOT_FOUND));
     }
 
     @Override

@@ -14,9 +14,9 @@ public interface PaymentService {
 
     Payment findById(String id);
 
-    VNPayResponse createVNPayPayment(long amount, String orderId, HttpServletRequest request);
+    VNPayResponse createVNPayPayment(String orderId, HttpServletRequest request);
 
     boolean verifyVNPayPayment(Map<String, String> params, String orderId, String secureHash);
 
-    Payment create(double amount, String orderId);
+    Payment create(String orderId);
 }

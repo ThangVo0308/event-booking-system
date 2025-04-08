@@ -18,17 +18,13 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderResponse {
     String id;
-    Integer quantity;
-    Double price;
+
     OrderStatus status;
 
     Date createdAt;
 
     @JsonProperty(value = "user")
     UserResponse mUser;
-
-    @JsonProperty(value = "ticket")
-    TicketResponse mTicket;
 
     @JsonProperty(value = "order_items")
     List<OrderItemResponse> mOrderItems;

@@ -71,19 +71,14 @@ public class OrderController {
 
     @Operation(summary = "Create a new order", description = "Create a new order for a user and ticket")
     @PostMapping
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<OrderResponse> create(@RequestBody @Valid OrderRequest request) {
         User user = userService.findUserById(request.userId());
-        Ticket ticket = ticketService.findTicketById(request.ticketId())
-                .orElseThrow(() -> new AppException(CommonErrorCode.ORDER_NOT_FOUND, HttpStatus.NOT_FOUND));
 
-        Order order = orderMapper.toOrder(request);
-        order.setUser(user);
-        order.setTicket(ticket);
-
-        Order savedOrder = orderService.createOrder(order);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(orderMapper.toOrderResponse(savedOrder));
+        Order order = Order.builder()
+                .user(user)
+                .build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(orderMapper.toOrderResponse(orderService.createOrder(order)));
     }
 
     @Operation(summary = "Update an existing order", description = "Update the details of an existing order")
@@ -91,13 +86,11 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrderResponse> update(@PathVariable String id, @RequestBody @Valid OrderRequest request) {
         User user = userService.findUserById(request.userId());
-        Ticket ticket = ticketService.findTicketById(request.ticketId())
-                .orElseThrow(() -> new AppException("TICKET_NOT_FOUND", HttpStatus.NOT_FOUND));
 
         Order order = orderMapper.toOrder(request);
         order.setId(id);
         order.setUser(user);
-        order.setTicket(ticket);
+        order.setStatus(OrderStatus.PENDING);
 
         Order updatedOrder = orderService.updateOrder(order);
         return ResponseEntity.status(HttpStatus.OK)

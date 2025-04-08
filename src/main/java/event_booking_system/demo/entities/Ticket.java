@@ -41,7 +41,19 @@ public class Ticket extends AbstractEntity{
     @Column(name = "available_quantity", nullable = false)
     Integer available_quantity;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    List<Order> orders;
+//    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    List<Order> orders;
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "id='" + id + '\'' +
+                ", event=" + event +
+                ", type=" + type +
+                ", price=" + price +
+                ", total_quantity=" + total_quantity +
+                ", available_quantity=" + available_quantity +
+                '}';
+    }
 }

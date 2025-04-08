@@ -129,15 +129,14 @@ public class DataSeeder {
         if (orderRepository.count() == 0) {
             List<User> users = userRepository.findAll();
             List<Ticket> tickets = ticketRepository.findAll();
+            List<Payment> payments = paymentRepository.findAll();
+
             List<Order> orders = new ArrayList<>();
             IntStream.range(0, 5).forEach(index -> {
                 User user = users.get(faker.number().numberBetween(0, users.size()));
-                Ticket ticket = tickets.get(faker.number().numberBetween(0, tickets.size()));
-                int quantity = faker.number().numberBetween(1, Math.min(5, ticket.getAvailable_quantity()));
+
                 Order order = Order.builder()
                         .user(user)
-                        .ticket(ticket)
-                        .quantity(quantity)
                         .status(getRandomEnum(OrderStatus.class))
                         .build();
                 orders.add(order);
@@ -150,16 +149,20 @@ public class DataSeeder {
         if (orderItemRepository.count() == 0) {
             List<Order> orders = orderRepository.findAll();
             List<Event> events = eventRepository.findAll();
+            List<Ticket> tickets = ticketRepository.findAll();
             List<OrderItem> orderItems = new ArrayList<>();
             orders.forEach(order -> {
                 int itemCount = faker.number().numberBetween(1, 3);
                 IntStream.range(0, itemCount).forEach(index -> {
-                    Event event = events.get(faker.number().numberBetween(0, events.size()));
+                    Ticket ticket = tickets.get(faker.number().numberBetween(0, tickets.size()));
+                    int quantity = faker.number().numberBetween(1, Math.min(5, ticket.getAvailable_quantity()));
+
                     OrderItem orderItem = OrderItem.builder()
                             .orderTime(faker.date().past(30, java.util.concurrent.TimeUnit.DAYS))
                             .price(faker.number().randomDouble(2, 5, 50))
                             .order(order)
-                            .event(event)
+                            .quantity(quantity)
+                            .ticket(ticket)
                             .build();
                     orderItems.add(orderItem);
                 });
@@ -189,6 +192,7 @@ public class DataSeeder {
                         .order(order)
                         .price(price)
                         .status(getRandomEnum(PaymentStatus.class))
+                        .method(PaymentMethod.CASH)
                         .build();
                 payments.add(payment);
             });

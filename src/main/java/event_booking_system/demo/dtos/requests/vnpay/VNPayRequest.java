@@ -6,9 +6,9 @@ import jakarta.validation.constraints.NotNull;
 
 public record VNPayRequest (
 
-        @NotNull(message = "null_field")
-        @Min(value = 1, message = "min_field")
-        long amount,
+//        @NotNull(message = "null_field")
+//        @Min(value = 1, message = "min_field")
+//        long amount,
 
         @NotNull(message = "null_field")
         @NotBlank(message = "blank_field")

@@ -31,16 +31,6 @@ public class Order extends AbstractEntity{
     @JsonManagedReference
     User user;
 
-    @ManyToOne
-    @JoinColumn(name = "ticket_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_orders_tickets", foreignKeyDefinition =
-                    "FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE ON UPDATE CASCADE"))
-    @JsonManagedReference
-    Ticket ticket;
-
-    @Column(name = "quantity", nullable = false)
-    Integer quantity;
-
     @Column(nullable = false, name = "status")
     @Enumerated(EnumType.STRING)
     OrderStatus status;
@@ -56,4 +46,16 @@ public class Order extends AbstractEntity{
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     List<OrderItem> orderItems;
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id='" + id + '\'' +
+                ", user=" + user +
+                ", status=" + status +
+                ", payment=" + payment +
+                ", checkin=" + checkin +
+                ", orderItems=" + orderItems +
+                '}';
+    }
 }

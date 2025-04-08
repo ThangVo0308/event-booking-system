@@ -10,7 +10,8 @@ public interface OrderItemService {
 
     OrderItem create(OrderItem item);
 
-    List<OrderItem> findByEventId(String eventId);
+    List<OrderItem> findByTicketId(String ticketId);
+    List<OrderItem> findByOrderId(String orderId);
 
     Page<OrderItem> findAll(int offset, int limit);
 

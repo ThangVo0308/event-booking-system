@@ -29,6 +29,9 @@ public class OrderItem extends AbstractEntity{
     @Column(name = "price", nullable = false)
     Double price;
 
+    @Column(name = "quantity", nullable = false)
+    Integer quantity;
+
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_order_items_orders",
@@ -37,11 +40,18 @@ public class OrderItem extends AbstractEntity{
     @JsonManagedReference
     Order order;
 
+//    @ManyToOne
+//    @JoinColumn(name = "event_id", referencedColumnName = "id",
+//            foreignKey = @ForeignKey(name = "fk_order_items_events",
+//                    foreignKeyDefinition = "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE ON UPDATE CASCADE"),
+//            nullable = false, updatable = false)
+//    @JsonManagedReference
+//    Event event;
+
     @ManyToOne
-    @JoinColumn(name = "event_id", referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_order_items_events",
-                    foreignKeyDefinition = "FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE ON UPDATE CASCADE"),
-            nullable = false, updatable = false)
+    @JoinColumn(name = "ticket_id", referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_order_items_tickets", foreignKeyDefinition =
+                    "FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE ON UPDATE CASCADE"))
     @JsonManagedReference
-    Event event;
+    Ticket ticket;
 }

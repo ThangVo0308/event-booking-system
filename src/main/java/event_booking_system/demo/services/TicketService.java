@@ -14,7 +14,7 @@ public interface TicketService {
 
     void deleteTicket(String id);
 
-    Optional<Ticket> findTicketById(String id);
+    Ticket findTicketById(String id);
 
     List<Ticket> findAllTickets();
 

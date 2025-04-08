@@ -51,10 +51,10 @@ public class PaymentController {
     @PostMapping("/vnpay")
     public ResponseEntity<VNPayResponse> createVNPayPayment(@RequestBody @Valid VNPayRequest payRequest,
                                                             HttpServletRequest request) {
-        long amount = payRequest.amount();
+//        long amount = payRequest.amount();
         String orderId = payRequest.orderId();
 
-        VNPayResponse vnPayResponse = paymentService.createVNPayPayment(amount, orderId, request);
+        VNPayResponse vnPayResponse = paymentService.createVNPayPayment(orderId, request);
 
         return ResponseEntity.ok(vnPayResponse);
     }
@@ -62,9 +62,8 @@ public class PaymentController {
     @Operation(summary = "Create Payment", description = "Create Payment")
     @PostMapping
     public ResponseEntity<PaymentResponse> create(@RequestBody @Valid PaymentRequest request) {
-        double amount = request.amount();
         String orderId = request.orderId();
-        return ResponseEntity.ok(paymentMapper.toPaymentResponse(paymentService.create(amount, orderId)));
+        return ResponseEntity.ok(paymentMapper.toPaymentResponse(paymentService.create(orderId)));
     }
 
     @Operation(summary = "VNPay Callback", description = "Handle VNPay payment callback")

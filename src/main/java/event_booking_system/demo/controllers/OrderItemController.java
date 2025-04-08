@@ -5,11 +5,9 @@ import event_booking_system.demo.dtos.responses.order.OrderItemResponse;
 import event_booking_system.demo.entities.Event;
 import event_booking_system.demo.entities.Order;
 import event_booking_system.demo.entities.OrderItem;
+import event_booking_system.demo.entities.Ticket;
 import event_booking_system.demo.mappers.OrderItemMapper;
-import event_booking_system.demo.services.EventService;
-import event_booking_system.demo.services.OrderItemService;
-import event_booking_system.demo.services.OrderService;
-import event_booking_system.demo.services.UserService;
+import event_booking_system.demo.services.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,6 +32,7 @@ import java.util.List;
 public class OrderItemController {
     OrderItemService orderItemService;
     OrderService orderService;
+    TicketService ticketService;
     EventService eventService;
     UserService userService;
 
@@ -41,27 +40,27 @@ public class OrderItemController {
 
     @Operation(summary = "Add Order item", description = "Create order item with order ID and event ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
-    public ResponseEntity<OrderItemResponse> createBookingItem(@RequestBody OrderItemRequest orderItemRequest)
+    public ResponseEntity<OrderItemResponse> createOrderItem(@RequestBody OrderItemRequest orderItemRequest)
             throws ParseException {
         Order order = orderService.findOrderById(orderItemRequest.orderId());
-        Event event = eventService.findEventById(orderItemRequest.eventId());
+        Ticket ticket = ticketService.findTicketById(orderItemRequest.ticketId());
 
         OrderItem orderItem = OrderItem.builder()
                 .order(order)
-                .event(event)
-                .orderTime(new Date())
-                .price(orderItemRequest.price())
+                .ticket(ticket)
+                .quantity(orderItemRequest.quantity())
+                .price(ticket.getPrice())
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(orderItemMapper.toOrderItemResponse(orderItemService.create(orderItem)));
     }
 
-    @Operation(summary = "Get Order Items by Event ID", description = "Retrieve all order items associated with a specific event ID", security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(summary = "Get Order Items by Ticket ID", description = "Retrieve all order items associated with a specific Ticket ID", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<List<OrderItemResponse>> getBookingItemsBySportsFieldId(
-            @PathVariable String eventId) {
-        List<OrderItem> orderItems = orderItemService.findByEventId(eventId);
+    public ResponseEntity<List<OrderItemResponse>> getOrderItemsByTicketId(
+            @PathVariable String ticketId) {
+        List<OrderItem> orderItems = orderItemService.findByTicketId(ticketId);
 
         List<OrderItemResponse> responses = orderItems.stream()
                 .map(orderItemMapper::toOrderItemResponse)
