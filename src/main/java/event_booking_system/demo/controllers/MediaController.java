@@ -7,6 +7,7 @@ import event_booking_system.demo.entities.Event;
 import event_booking_system.demo.entities.Media;
 import event_booking_system.demo.enums.MediaType;
 import event_booking_system.demo.exceptions.AppException;
+import event_booking_system.demo.exceptions.CommonErrorCode;
 import event_booking_system.demo.mappers.MediaMapper;
 import event_booking_system.demo.services.EventService;
 import event_booking_system.demo.services.MediaService;
@@ -107,8 +108,8 @@ public class MediaController {
             @PathVariable String eventId,
             @RequestParam(defaultValue = "0") String offset,
             @RequestParam(defaultValue = "10") String limit) {
-        Event event = eventService.findEventById(eventId)
-                .orElseThrow(() -> new AppException("EVENT_NOT_FOUND", HttpStatus.NOT_FOUND));
+        Event event = eventService.findEventById(eventId);
+        if (event == null) throw new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         int page = Integer.parseInt(offset);
         int size = Integer.parseInt(limit);
@@ -164,8 +165,8 @@ public class MediaController {
             @PathVariable String type,
             @RequestParam(defaultValue = "0") String offset,
             @RequestParam(defaultValue = "10") String limit) {
-        Event event = eventService.findEventById(eventId)
-                .orElseThrow(() -> new AppException("EVENT_NOT_FOUND", HttpStatus.NOT_FOUND));
+        Event event = eventService.findEventById(eventId);
+        if (event == null) throw new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         MediaType mediaType;
         try {

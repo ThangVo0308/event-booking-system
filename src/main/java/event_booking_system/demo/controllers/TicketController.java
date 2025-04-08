@@ -71,8 +71,8 @@ public class TicketController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TicketResponse> create(@RequestBody @Valid TicketRequest request) {
-        Event event = eventService.findEventById(request.eventId())
-                .orElseThrow(() -> new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Event event = eventService.findEventById(request.eventId());
+        if (event == null) throw new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         Ticket ticket = ticketMapper.toTicket(request);
         ticket.setEvent(event);
@@ -86,8 +86,8 @@ public class TicketController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TicketResponse> update(@PathVariable String id, @RequestBody @Valid TicketRequest request) {
-        Event event = eventService.findEventById(request.eventId())
-                .orElseThrow(() -> new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Event event = eventService.findEventById(request.eventId());
+        if (event == null) throw new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         Ticket ticket = ticketMapper.toTicket(request);
         ticket.setId(id);
@@ -112,8 +112,8 @@ public class TicketController {
             @PathVariable String eventId,
             @RequestParam(defaultValue = "0") String offset,
             @RequestParam(defaultValue = "10") String limit) {
-        Event event = eventService.findEventById(eventId)
-                .orElseThrow(() -> new AppException("EVENT_NOT_FOUND", HttpStatus.NOT_FOUND));
+        Event event = eventService.findEventById(eventId);
+        if (event == null) throw new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         int page = Integer.parseInt(offset);
         int size = Integer.parseInt(limit);
@@ -168,8 +168,8 @@ public class TicketController {
             @PathVariable String eventId,
             @RequestParam(defaultValue = "0") String offset,
             @RequestParam(defaultValue = "10") String limit) {
-        Event event = eventService.findEventById(eventId)
-                .orElseThrow(() -> new AppException("EVENT_NOT_FOUND", HttpStatus.NOT_FOUND));
+        Event event = eventService.findEventById(eventId);
+        if (event == null) throw new AppException(CommonErrorCode.EVENT_NOT_FOUND, HttpStatus.NOT_FOUND);
 
         int page = Integer.parseInt(offset);
         int size = Integer.parseInt(limit);

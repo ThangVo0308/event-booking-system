@@ -14,7 +14,7 @@ import event_booking_system.demo.exceptions.order.OrderException;
 import event_booking_system.demo.exceptions.payment.PaymentErrorCode;
 import event_booking_system.demo.exceptions.payment.PaymentException;
 import event_booking_system.demo.repositories.PaymentRepository;
-import event_booking_system.demo.service.PaymentService;
+import event_booking_system.demo.services.PaymentService;
 import event_booking_system.demo.services.OrderService;
 import event_booking_system.demo.vnpay.VNPayUtils;
 import jakarta.servlet.http.HttpServletRequest;

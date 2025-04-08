@@ -1,4 +1,4 @@
-package event_booking_system.demo.service.impls;
+package event_booking_system.demo.services.impls;
 
 import event_booking_system.demo.entities.Event;
 import event_booking_system.demo.entities.User;
