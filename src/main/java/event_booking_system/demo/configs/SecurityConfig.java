@@ -51,6 +51,7 @@ public class SecurityConfig {
             "/auth/introspect",
             "/users",
             "/auth",
+            "/payment/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
             "/swagger-resources/**",

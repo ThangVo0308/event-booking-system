@@ -23,13 +23,6 @@ public class AppConfig {
     public AuditorAware<String> auditorProvider() { return new AuditorAwareImpl(); }
 
     @Bean
-    public ResourceBundleMessageSource messageSource() {
-        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasename("messages");
-        source.setDefaultEncoding("UTF-8");
-        return source;
-    }
-    @Bean
     public EmailValidator emailValidator() {
         return new EmailValidator();
     }

@@ -67,8 +67,8 @@ public class PaymentController {
     }
 
     @Operation(summary = "VNPay Callback", description = "Handle VNPay payment callback")
-    @GetMapping("/vnpay/callback")
-    public ResponseEntity<Void> vnPayCallback(@RequestParam Map<String, String> params, HttpServletRequest request) {
+    @GetMapping("/vn-pay-callback")
+    public ResponseEntity<String> vnPayCallback(@RequestParam Map<String, String> params, HttpServletRequest request) {
         log.info("VNPay Callback received with params: {}", params);
 
         String orderId = params.get("vnp_TxnRef");
@@ -76,11 +76,12 @@ public class PaymentController {
 
         boolean isVerified = paymentService.verifyVNPayPayment(params, orderId, secureHash);
 
-        String status = isVerified ? "success" : "failed";
-        request.getSession().setAttribute("paymentStatus", status);
-
-        String redirectUrl = "http://localhost:3333/sports-field-booking/?paymentStatus=" + status;
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(redirectUrl)).build();
+        if (isVerified) {
+            return ResponseEntity.ok("Payment processed successfully");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Payment verification failed");
+        }
     }
 
 
